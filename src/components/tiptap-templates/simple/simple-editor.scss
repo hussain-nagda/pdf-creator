@@ -75,6 +75,39 @@ body,
   padding: 3rem 3rem 30vh;
 }
 
+/* Table border styling with customizable stroke color */
+.simple-editor-content {
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--tbl-border, #cccccc);
+  }
+
+  th,
+  td {
+    border: 1px solid var(--tbl-border, #cccccc);
+  }
+}
+
+/* Hover delete controls for table */
+.simple-editor-wrapper {
+  position: relative;
+}
+
+.tt-table-hover-controls button {
+  pointer-events: auto;
+  width: 24px;
+  height: 24px;
+  line-height: 24px;
+  text-align: center;
+  border-radius: 50%;
+  border: 1px solid var(--tt-gray-light-300);
+  background: var(--tt-bg-color);
+  color: var(--tt-theme-text);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  cursor: pointer;
+}
+
 @media screen and (max-width: 480px) {
   .simple-editor-content .tiptap.ProseMirror.simple-editor {
     padding: 1rem 1.5rem 30vh;

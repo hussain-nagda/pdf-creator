@@ -76,14 +76,17 @@ import "@/components/tiptap-templates/simple/simple-editor.scss"
 import content from "@/components/tiptap-templates/simple/data/content.json"
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
 import { TableButton } from "@/components/tiptap-ui/table-button"
+import type { Editor } from "@tiptap/react"
 
 const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
+  onExportPdf,
   isMobile,
 }: {
   onHighlighterClick: () => void
   onLinkClick: () => void
+  onExportPdf: () => void
   isMobile: boolean
 }) => {
   return (
@@ -144,6 +147,9 @@ const MainToolbarContent = ({
       <ToolbarGroup>
         <ImageUploadButton text="Add" />
         <TableButton />
+        <Button type="button" data-style="ghost" onClick={onExportPdf}>
+          Export PDF
+        </Button>
       </ToolbarGroup>
 
       <Spacer />
@@ -195,6 +201,53 @@ export function SimpleEditor() {
   const toolbarRef = React.useRef<HTMLDivElement>(null)
   const contentRef = React.useRef<HTMLDivElement>(null)
 
+  // const [hoverCell, setHoverCell] = React.useState<{
+  //   cell: HTMLTableCellElement
+  //   table: HTMLTableElement
+  //   rect: DOMRect
+  // } | null>(null)
+
+  // const handleMouseMove = React.useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+  //   const target = e.target as HTMLElement | null
+  //   if (!target) return
+  //   const cell = target.closest('td, th') as HTMLTableCellElement | null
+  //   if (!cell) {
+  //     setHoverCell(null)
+  //     return
+  //   }
+  //   const table = cell.closest('table') as HTMLTableElement | null
+  //   if (!table) {
+  //     setHoverCell(null)
+  //     return
+  //   }
+  //   setHoverCell({ cell, table, rect: cell.getBoundingClientRect() })
+  // }, [])
+
+  // const handleMouseLeave = React.useCallback(() => {
+  //   setHoverCell(null)
+  // }, [])
+
+  // Extend Table to support border color attribute → CSS variable for borders
+  const TableWithBorder = Table.extend({
+    addAttributes() {
+      return {
+        ...this.parent?.(),
+        borderColor: {
+          default: "#cccccc",
+          parseHTML: (element: HTMLElement) =>
+            element.getAttribute("data-border-color") || "#cccccc",
+          renderHTML: (attributes: { borderColor?: string }) => {
+            const value = attributes.borderColor || "#cccccc"
+            return {
+              "data-border-color": value,
+              style: `--tbl-border: ${value}`,
+            }
+          },
+        },
+      }
+    },
+  })
+
   const editor = useEditor({
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
@@ -215,7 +268,7 @@ export function SimpleEditor() {
           enableClickSelection: true,
         },
       }),
-      Table.configure({ resizable: true }),
+      TableWithBorder.configure({ resizable: true }),
       TableRow,
       TableCell,
       TableHeader,
@@ -270,6 +323,14 @@ export function SimpleEditor() {
             <MainToolbarContent
               onHighlighterClick={() => setMobileView("highlighter")}
               onLinkClick={() => setMobileView("link")}
+              onExportPdf={() => {
+                if (contentRef.current) {
+                  exportElementToPdf(contentRef.current, {
+                    documentTitle: "Document",
+                    page: { size: "A4", margin: "16mm" },
+                  })
+                }
+              }}
               isMobile={isMobile}
             />
           ) : (
@@ -280,30 +341,67 @@ export function SimpleEditor() {
           )}
         </Toolbar>
 
-        <div ref={contentRef} className="simple-editor-content">
+        <div
+          ref={contentRef}
+          className="simple-editor-content"
+          // onMouseMove={handleMouseMove}
+          // onMouseLeave={handleMouseLeave}
+        >
           <EditorContent
             editor={editor}
             role="presentation"
           />
-        </div>
-
-        <div className="no-print" style={{ display: "flex", justifyContent: "flex-end", padding: "8px" }}>
-          <Button
-            type="button"
-            data-style="ghost"
-            onClick={() => {
-              if (contentRef.current) {
-                exportElementToPdf(contentRef.current, {
-                  documentTitle: "Document",
-                  page: { size: "A4", margin: "16mm" },
-                })
-              }
-            }}
-          >
-            Export PDF
-          </Button>
+          {/* {hoverCell && editor && (
+            <HoverDeleteControls editor={editor} hover={hoverCell} container={contentRef} />
+          )} */}
         </div>
       </EditorContext.Provider>
     </div>
   )
 }
+
+// function HoverDeleteControls({
+//   editor,
+//   hover,
+//   container,
+// }: {
+//   editor: Editor
+//   hover: { cell: HTMLTableCellElement; table: HTMLTableElement; rect: DOMRect }
+//   container: React.RefObject<HTMLDivElement>
+// }) {
+//   const containerRect = container.current?.getBoundingClientRect()
+//   if (!containerRect) return null
+
+//   const cellRect = hover.rect
+//   const top = cellRect.top - containerRect.top + container.current!.scrollTop
+//   const left = cellRect.left - containerRect.left + container.current!.scrollLeft
+//   const height = cellRect.height
+//   const width = cellRect.width
+
+//   return (
+//     <div className="tt-table-hover-controls" style={{ position: "absolute", pointerEvents: "none" }}>
+//       <button
+//         className="tt-row-delete no-print"
+//         style={{ position: "absolute", left: -32, top: top + height / 2 - 12 }}
+//         onClick={(e) => {
+//           e.preventDefault()
+//           e.stopPropagation()
+//           editor.chain().focus().deleteRow().run()
+//         }}
+//       >
+//         ×
+//       </button>
+//       <button
+//         className="tt-col-delete no-print"
+//         style={{ position: "absolute", top: -32, left: left + width / 2 - 12 }}
+//         onClick={(e) => {
+//           e.preventDefault()
+//           e.stopPropagation()
+//           editor.chain().focus().deleteColumn().run()
+//         }}
+//       >
+//         ×
+//       </button>
+//     </div>
+//   )
+// }
