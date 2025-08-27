@@ -10,9 +10,10 @@
       "content": [
         {
           "type": "text",
-          "text": "Getting started"
+          "text": "General Editor"
         }
       ]
+     
     },
     {
       "type": "paragraph",
@@ -54,7 +55,7 @@
         },
         {
           "type": "text",
-          "text": " UI components and Tiptap extensions licensed under "
+          "text": " UI components extensions licensed under "
         },
         {
           "type": "text",
@@ -83,34 +84,7 @@
         },
         {
           "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://tiptap.dev/docs/ui-components/templates/simple-editor",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "Tiptap UI Components docs"
-        },
-        {
-          "type": "text",
           "text": " or using our CLI tool."
-        }
-      ]
-    },
-    {
-      "type": "codeBlock",
-      "attrs": {
-        "language": null
-      },
-      "content": [
-        {
-          "type": "text",
-          "text": "npx @tiptap/cli init"
         }
       ]
     },
@@ -220,14 +194,6 @@
           "text": " to make your writing more engaging and professional."
         }
       ]
-    },
-    {
-      "type": "image",
-      "attrs": {
-        "src": "/images/tiptap-ui-placeholder-image.jpg",
-        "alt": "placeholder-image",
-        "title": "placeholder-image"
-      }
     },
     {
       "type": "bulletList",
@@ -365,21 +331,6 @@
             }
           ],
           "text": "→ "
-        },
-        {
-          "type": "text",
-          "marks": [
-            {
-              "type": "link",
-              "attrs": {
-                "href": "https://tiptap.dev/docs/ui-components/templates/simple-editor#features",
-                "target": "_blank",
-                "rel": "noopener noreferrer nofollow",
-                "class": null
-              }
-            }
-          ],
-          "text": "Learn more"
         }
       ]
     },
@@ -433,38 +384,8 @@
               ]
             }
           ]
-        },
-        {
-          "type": "taskItem",
-          "attrs": {
-            "checked": false
-          },
-          "content": [
-            {
-              "type": "paragraph",
-              "attrs": {
-                "textAlign": "left"
-              },
-              "content": [
-                {
-                  "type": "text",
-                  "marks": [
-                    {
-                      "type": "link",
-                      "attrs": {
-                        "href": "https://tiptap.dev/docs/ui-components/templates/simple-editor",
-                        "target": "_blank",
-                        "rel": "noopener noreferrer nofollow",
-                        "class": null
-                      }
-                    }
-                  ],
-                  "text": "Integrate the free template"
-                }
-              ]
-            }
-          ]
         }
+       
       ]
     },
     {
