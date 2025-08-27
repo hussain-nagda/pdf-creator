@@ -6,6 +6,8 @@ import { EditorContent, EditorContext, useEditor } from "@tiptap/react"
 // --- Tiptap Core Extensions ---
 import { StarterKit } from "@tiptap/starter-kit"
 import { Image } from "@tiptap/extension-image"
+import { TextStyle } from "@tiptap/extension-text-style"
+import { FontFamily } from "@tiptap/extension-font-family"
 import { TaskItem, TaskList } from "@tiptap/extension-list"
 import { TextAlign } from "@tiptap/extension-text-align"
 import { Typography } from "@tiptap/extension-typography"
@@ -68,7 +70,7 @@ import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
 import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
 
 // --- Lib ---
-import { handleImageUpload, MAX_FILE_SIZE, exportElementToPdf } from "@/lib/tiptap-utils"
+import { handleImageUpload, MAX_FILE_SIZE, exportElementToPdf, exportElementAsWord } from "@/lib/tiptap-utils"
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss"
@@ -82,11 +84,15 @@ const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
   onExportPdf,
+  onExportWord,
+  onFontChange,
   isMobile,
 }: {
   onHighlighterClick: () => void
   onLinkClick: () => void
   onExportPdf: () => void
+  onExportWord: () => void
+  onFontChange: (family: string) => void
   isMobile: boolean
 }) => {
   return (
@@ -145,10 +151,28 @@ const MainToolbarContent = ({
       <ToolbarSeparator />
 
       <ToolbarGroup>
+        <label className="no-print" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
+          <span style={{ fontSize: 12 }}>Font</span>
+          <select
+            onChange={(e) => onFontChange(e.target.value)}
+            defaultValue="Inter, sans-serif"
+            style={{ height: 28 }}
+          >
+            <option value="Inter, sans-serif">Inter</option>
+            <option value="DM Sans, sans-serif">DM Sans</option>
+            <option value="Georgia, serif">Georgia</option>
+            <option value="Times New Roman, Times, serif">Times New Roman</option>
+            <option value="Arial, Helvetica, sans-serif">Arial</option>
+            <option value="Courier New, Courier, monospace">Courier New</option>
+          </select>
+        </label>
         <ImageUploadButton text="Add" />
         <TableButton />
         <Button type="button" data-style="ghost" onClick={onExportPdf}>
           Export PDF
+        </Button>
+        <Button type="button" data-style="ghost" onClick={onExportWord}>
+          Export Word
         </Button>
       </ToolbarGroup>
 
@@ -278,6 +302,8 @@ export function SimpleEditor() {
       TaskItem.configure({ nested: true }),
       Highlight.configure({ multicolor: true }),
       Image,
+      TextStyle,
+      FontFamily,
       Typography,
       Superscript,
       Subscript,
@@ -330,6 +356,14 @@ export function SimpleEditor() {
                     page: { size: "A4", margin: "16mm" },
                   })
                 }
+              }}
+              onExportWord={() => {
+                if (contentRef.current) {
+                  exportElementAsWord(contentRef.current, { filename: "Document" })
+                }
+              }}
+              onFontChange={(family) => {
+                editor?.chain().focus().setFontFamily(family).run()
               }}
               isMobile={isMobile}
             />

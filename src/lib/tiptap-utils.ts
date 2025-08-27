@@ -429,6 +429,50 @@ export async function exportElementToPdf(element: HTMLElement, options?: {
   setTimeout(closeIfAllowed, 2000)
 }
 
+/**
+ * Export a DOM element's HTML as a Word (.doc) file using an HTML-based .doc payload.
+ * This preserves inline styling, colors, images (including base64 data URLs), and tables.
+ */
+export function exportElementAsWord(element: HTMLElement, options?: {
+  filename?: string
+  title?: string
+}) {
+  if (!element) return
+
+  const filename = (options?.filename || "Document") + ".doc"
+  const title = options?.title || document.title || "Document"
+
+  const html = `<!DOCTYPE html>
+  <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+  <head>
+    <meta charset="utf-8">
+    <title>${title}</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Minimal styles to ensure borders/spacing carry over -->
+    <style>
+      table { border-collapse: collapse; }
+      th, td { border: 1px solid var(--tbl-border, #cccccc); }
+      img { max-width: 100%; height: auto; }
+      body { margin: 1in; }
+    </style>
+  </head>
+  <body>
+    ${element.outerHTML}
+  </body>
+  </html>`
+
+  const blob = new Blob([html], { type: "application/msword" })
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement("a")
+  a.href = url
+  a.download = filename
+  document.body.appendChild(a)
+  a.click()
+  document.body.removeChild(a)
+  URL.revokeObjectURL(url)
+}
+
 type ProtocolOptions = {
   /**
    * The protocol scheme to be registered.
