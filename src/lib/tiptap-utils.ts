@@ -451,10 +451,15 @@ export function exportElementAsWord(element: HTMLElement, options?: {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Minimal styles to ensure borders/spacing carry over -->
     <style>
-      table { border-collapse: collapse; }
-      th, td { border: 1px solid var(--tbl-border, #cccccc); }
-      img { max-width: 100%; height: auto; }
-      body { margin: 1in; }
+      body { margin: 1in; font-family: 'Inter', sans-serif; }
+      .tiptap.ProseMirror { font-family: inherit; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border: 1px solid #cccccc; }
+      img { max-width: 100%; height: auto; object-fit: contain; }
+      /* Respect alignment from inline styles/classes */
+      .align-left { text-align: left; }
+      .align-center { text-align: center; }
+      .align-right { text-align: right; }
     </style>
   </head>
   <body>

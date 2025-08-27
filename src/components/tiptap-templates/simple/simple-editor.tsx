@@ -78,6 +78,13 @@ import "@/components/tiptap-templates/simple/simple-editor.scss"
 import content from "@/components/tiptap-templates/simple/data/content.json"
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
 import { TableButton } from "@/components/tiptap-ui/table-button"
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/tiptap-ui-primitive/dropdown-menu"
+import { Card, CardBody } from "@/components/tiptap-ui-primitive/card"
 import type { Editor } from "@tiptap/react"
 
 const MainToolbarContent = ({
@@ -151,21 +158,51 @@ const MainToolbarContent = ({
       <ToolbarSeparator />
 
       <ToolbarGroup>
-        <label className="no-print" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
-          <span style={{ fontSize: 12 }}>Font</span>
-          <select
-            onChange={(e) => onFontChange(e.target.value)}
-            defaultValue="Inter, sans-serif"
-            style={{ height: 28 }}
-          >
-            <option value="Inter, sans-serif">Inter</option>
-            <option value="DM Sans, sans-serif">DM Sans</option>
-            <option value="Georgia, serif">Georgia</option>
-            <option value="Times New Roman, Times, serif">Times New Roman</option>
-            <option value="Arial, Helvetica, sans-serif">Arial</option>
-            <option value="Courier New, Courier, monospace">Courier New</option>
-          </select>
-        </label>
+        <DropdownMenu modal>
+          <DropdownMenuTrigger asChild>
+            <Button type="button" data-style="ghost" tooltip="Font">
+              <span className="tiptap-button-text">Font</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <Card>
+              <CardBody>
+                <div style={{ display: "grid", gap: 4 }}>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("Inter, sans-serif")} style={{ fontFamily: 'Inter, sans-serif' }}>
+                      Inter
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("DM Sans, sans-serif")} style={{ fontFamily: 'DM Sans, sans-serif' }}>
+                      DM Sans
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("Georgia, serif")} style={{ fontFamily: 'Georgia, serif' }}>
+                      Georgia
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("Times New Roman, Times, serif")} style={{ fontFamily: 'Times New Roman, Times, serif' }}>
+                      Times New Roman
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("Arial, Helvetica, sans-serif")} style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}>
+                      Arial
+                    </button>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <button type="button" onClick={() => onFontChange("Courier New, Courier, monospace")} style={{ fontFamily: 'Courier New, Courier, monospace' }}>
+                      Courier New
+                    </button>
+                  </DropdownMenuItem>
+                </div>
+              </CardBody>
+            </Card>
+          </DropdownMenuContent>
+        </DropdownMenu>
         <ImageUploadButton text="Add" />
         <TableButton />
         <Button type="button" data-style="ghost" onClick={onExportPdf}>
