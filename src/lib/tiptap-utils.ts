@@ -308,16 +308,125 @@ export const handleImageUpload = async (
     onProgress?.({ progress })
   }
 
-  // Convert file to base64 string (data URL)
-  const toBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.readAsDataURL(file)
-      reader.onload = () => resolve(reader.result as string)
-      reader.onerror = (error) => reject(error)
+  return await fileToBase64(file)
+}
+
+/**
+ * Convert a File to a base64 data URL string
+ */
+export function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.addEventListener("load", () => resolve(reader.result as string))
+    reader.addEventListener("error", () => reject(new Error("Failed to read file")))
+    reader.readAsDataURL(file)
+  })
+}
+
+/**
+ * Export a DOM element to PDF by opening a print window with cloned content.
+ * Preserves styles and colors using print CSS adjustments.
+ */
+export async function exportElementToPdf(element: HTMLElement, options?: {
+  documentTitle?: string
+  page?: {
+    size?: string
+    margin?: string
+  }
+}) {
+  if (!element) return
+
+  const title = options?.documentTitle ?? document.title ?? "Document"
+  const pageSize = options?.page?.size ?? "A4"
+  const pageMargin = options?.page?.margin ?? "16mm"
+
+  const printWindow = window.open("", "_blank")
+  if (!printWindow) return
+
+  const doc = printWindow.document
+
+  // Build head: copy stylesheets and style tags
+  const head = doc.createElement("head")
+  head.innerHTML = `
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${title}</title>
+  `
+
+  // Clone link rel="stylesheet" elements
+  Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+    .forEach((link) => {
+      const cloned = doc.createElement("link")
+      cloned.setAttribute("rel", "stylesheet")
+      const href = link.getAttribute("href")
+      if (href) cloned.setAttribute("href", href)
+      head.appendChild(cloned)
     })
 
-  return await toBase64(file)
+  // Clone inline <style> elements
+  Array.from(document.querySelectorAll("style"))
+    .forEach((style) => {
+      const cloned = doc.createElement("style")
+      cloned.textContent = style.textContent
+      head.appendChild(cloned)
+    })
+
+  // Add print-precision CSS
+  const printCss = doc.createElement("style")
+  printCss.textContent = `
+    @page { size: ${pageSize}; margin: ${pageMargin}; }
+    html, body {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+    body { margin: 0; }
+    img, svg, canvas, video { break-inside: avoid; page-break-inside: avoid; }
+    .no-print { display: none !important; }
+  `
+  head.appendChild(printCss)
+
+  // Build body with cloned element
+  const body = doc.createElement("body")
+  const container = doc.createElement("div")
+  container.style.width = "100%"
+  container.style.boxSizing = "border-box"
+  container.innerHTML = element.outerHTML
+  body.appendChild(container)
+
+  doc.documentElement.appendChild(head)
+  doc.documentElement.appendChild(body)
+
+  // Wait for fonts and images to load fully
+  const waitForFonts = (doc as Document & { fonts?: FontFaceSet }).fonts?.ready ?? Promise.resolve()
+  const images = Array.from(doc.images)
+  const waitForImages = Promise.all(images.map((img) => {
+    if ((img as HTMLImageElement).complete) {
+      return Promise.resolve(true)
+    }
+    return new Promise((resolve) => {
+      img.addEventListener("load", () => resolve(true))
+      img.addEventListener("error", () => resolve(true))
+    })
+  }))
+
+  await Promise.all([waitForFonts, waitForImages])
+
+  // Give the browser a tick to apply styles
+  await new Promise((r) => setTimeout(r, 50))
+
+  printWindow.focus()
+  printWindow.print()
+
+  // Optional: close the window after printing (best-effort)
+  const closeIfAllowed = () => {
+    try {
+      printWindow.close()
+    } catch {}
+  }
+  printWindow.addEventListener("afterprint", closeIfAllowed)
+  // Fallback timeout in case afterprint doesn't fire
+  setTimeout(closeIfAllowed, 2000)
 }
 
 type ProtocolOptions = {

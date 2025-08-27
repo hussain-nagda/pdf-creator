@@ -68,7 +68,7 @@ import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
 import { ThemeToggle } from "@/components/tiptap-templates/simple/theme-toggle"
 
 // --- Lib ---
-import { handleImageUpload, MAX_FILE_SIZE } from "@/lib/tiptap-utils"
+import { handleImageUpload, MAX_FILE_SIZE, exportElementToPdf } from "@/lib/tiptap-utils"
 
 // --- Styles ---
 import "@/components/tiptap-templates/simple/simple-editor.scss"
@@ -193,6 +193,7 @@ export function SimpleEditor() {
     "main" | "highlighter" | "link"
   >("main")
   const toolbarRef = React.useRef<HTMLDivElement>(null)
+  const contentRef = React.useRef<HTMLDivElement>(null)
 
   const editor = useEditor({
     immediatelyRender: false,
@@ -279,11 +280,29 @@ export function SimpleEditor() {
           )}
         </Toolbar>
 
-        <EditorContent
-          editor={editor}
-          role="presentation"
-          className="simple-editor-content"
-        />
+        <div ref={contentRef} className="simple-editor-content">
+          <EditorContent
+            editor={editor}
+            role="presentation"
+          />
+        </div>
+
+        <div className="no-print" style={{ display: "flex", justifyContent: "flex-end", padding: "8px" }}>
+          <Button
+            type="button"
+            data-style="ghost"
+            onClick={() => {
+              if (contentRef.current) {
+                exportElementToPdf(contentRef.current, {
+                  documentTitle: "Document",
+                  page: { size: "A4", margin: "16mm" },
+                })
+              }
+            }}
+          >
+            Export PDF
+          </Button>
+        </div>
       </EditorContext.Provider>
     </div>
   )

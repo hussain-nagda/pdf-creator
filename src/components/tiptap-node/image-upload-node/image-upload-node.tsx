@@ -185,7 +185,7 @@ function useFileUpload(options: UploadOptions) {
       if (fileToRemove?.abortController) {
         fileToRemove.abortController.abort()
       }
-      if (fileToRemove?.url) {
+      if (fileToRemove?.url && fileToRemove.url.startsWith("blob:")) {
         URL.revokeObjectURL(fileToRemove.url)
       }
       return prev.filter((item) => item.id !== fileId)
@@ -197,7 +197,7 @@ function useFileUpload(options: UploadOptions) {
       if (item.abortController) {
         item.abortController.abort()
       }
-      if (item.url) {
+      if (item.url && item.url.startsWith("blob:")) {
         URL.revokeObjectURL(item.url)
       }
     })
