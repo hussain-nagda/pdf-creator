@@ -17,6 +17,7 @@ import { Superscript } from "@tiptap/extension-superscript"
 import { Selection } from "@tiptap/extensions"
 import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table"
 import { diffWords } from "diff"
+
 // --- UI Primitives ---
 import { Button } from "@/components/tiptap-ui-primitive/button"
 import { Spacer } from "@/components/tiptap-ui-primitive/spacer"
@@ -44,8 +45,7 @@ import { useCursorVisibility } from "@/hooks/use-cursor-visibility"
 // --- Lib ---
 import { handleImageUpload, MAX_FILE_SIZE, exportElementToPdf, exportElementAsWord } from "@/lib/tiptap-utils"
 
-// --- Diff library for version comparison ---
-
+// --- Content Data ---
 import content from "@/components/tiptap-templates/simple/data/content.json"
 
 export function SimpleEditor() {
@@ -169,7 +169,7 @@ export function SimpleEditor() {
   }
 
   return (
-    <div className="simple-editor-wrapper">
+    <div className="simple-editor-wrapper" style={{ paddingRight: 220 /* leave space for sidebar */ }}>
       <EditorContext.Provider value={{ editor }}>
         {/* Toolbar */}
         <Toolbar
@@ -219,60 +219,97 @@ export function SimpleEditor() {
             <Button type="button" data-style="ghost" onClick={() => exportElementAsWord(contentRef.current!)}>
               Export Word
             </Button>
-             <button onClick={saveVersion}>💾 Save Version</button>
+             <button
+            style={{
+              display: "block",
+              width: "100%",
+              marginBottom: 5,
+              padding: "5px 8px",
+              textAlign: "left",
+              border: "1px solid #ccc",
+              borderRadius: 4,
+              backgroundColor: "#e0f7fa",
+              cursor: "pointer",
+            }}
+            onClick={saveVersion}
+          >
+            💾 Save Version
+          </button>
           </ToolbarGroup>
         </Toolbar>
 
-        <div ref={contentRef} className="simple-editor-content">
+        {/* Editor Content */}
+        <div ref={contentRef} className="simple-editor-content" style={{ display: "flex", gap: "20px" }}>
           <EditorContent editor={editor} />
         </div>
       </EditorContext.Provider>
 
-      {/* Version Controls */}
-      <div className="simple-editor-container" style={{ display: "flex", gap: "20px" }}>
-  {/* Editor area */}
-  <div style={{ flex: 1 }}>
-    <EditorContent editor={editor} />
-  </div>
+      {/* --- Version Sidebar --- */}
+      {versions.length > 0 && (
+        <div
+          style={{
+            position: "fixed",
+            top: 100,
+            right: 0,
+            width: 200,
+            height: "calc(100% - 120px)",
+            padding: "10px",
+            backgroundColor: "#f9f9f9",
+            borderLeft: "1px solid #ddd",
+            overflowY: "auto",
+            zIndex: 1000,
+          }}
+        >
+          <h4>Versions</h4>
+         
 
-  {/* Versions sidebar */}
-  {versions.length > 0 && (
-    <div
-      className="versions-sidebar"
-      style={{
-        width: "250px",
-        borderLeft: "1px solid #ccc",
-        padding: "10px",
-        display: "flex",
-        flexDirection: "column",
-        gap: "10px",
-      }}
-    >
-      <h4>History ({versions.length} version{versions.length > 1 ? "s" : ""})</h4>
-      <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-        {versions.map((v, i) => (
-          <li
-            key={i}
-            style={{
-              border: "1px solid #ccc",
-              borderRadius: "5px",
-              padding: "5px",
-              cursor: "pointer",
-            }}
-          >
-            <div>Version {i + 1}</div>
-            <div style={{ marginTop: "5px", display: "flex", gap: "5px" }}>
-              <button onClick={() => restoreVersion(i)}>Restore</button>
-              {/* {i < versions.length - 1 && (
-                <button onClick={() => compareVersions(i, i + 1)}>Compare</button>
-              )} */}
+          <ul style={{ listStyle: "none", padding: 0, marginTop: 10 }}>
+            {versions.map((v, i) => (
+              <li key={i} style={{ marginBottom: 5 }}>
+                <span>{`Version ${i + 1}`}</span>
+                <div style={{ marginTop: 2 }}>
+                  <button
+                    style={{
+                      display: "block",
+                      width: "100%",
+                      marginBottom: 3,
+                      padding: "5px 8px",
+                      textAlign: "left",
+                      border: "1px solid #ccc",
+                      borderRadius: 4,
+                      backgroundColor: "#fff",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => restoreVersion(i)}
+                  >
+                    Restore
+                  </button>
+                  {/* {i < versions.length - 1 && (
+                    <button
+                      style={{
+                        marginLeft: 5,
+                        padding: "2px 5px",
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                      onClick={() => compareVersions(i, i + 1)}
+                    >
+                      Compare ↔
+                    </button>
+                  )} */}
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* {compareResult && (
+            <div style={{ marginTop: 20 }}>
+              <h5>Comparison Result:</h5>
+              {compareResult}
             </div>
-          </li>
-        ))}
-      </ul>
-    </div>
-  )}
-</div>
+          )} */}
+        </div>
+      )}
     </div>
   )
 }
