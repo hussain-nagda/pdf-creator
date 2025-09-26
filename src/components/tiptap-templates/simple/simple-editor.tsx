@@ -155,8 +155,8 @@ export function SimpleEditor() {
           const style = part.added
             ? { backgroundColor: "lightgreen" }
             : part.removed
-            ? { backgroundColor: "salmon", textDecoration: "line-through" }
-            : {}
+              ? { backgroundColor: "salmon", textDecoration: "line-through" }
+              : {}
           return (
             <span key={i} style={style}>
               {part.value}
@@ -219,22 +219,22 @@ export function SimpleEditor() {
             <Button type="button" data-style="ghost" onClick={() => exportElementAsWord(contentRef.current!)}>
               Export Word
             </Button>
-             <button
-            style={{
-              display: "block",
-              width: "100%",
-              marginBottom: 5,
-              padding: "5px 8px",
-              textAlign: "left",
-              border: "1px solid #ccc",
-              borderRadius: 4,
-              backgroundColor: "#e0f7fa",
-              cursor: "pointer",
-            }}
-            onClick={saveVersion}
-          >
-            💾 Save Version
-          </button>
+            <button
+              style={{
+                display: "block",
+                width: "100%",
+                marginBottom: 5,
+                padding: "5px 8px",
+                textAlign: "left",
+                border: "1px solid #ccc",
+                borderRadius: 4,
+                backgroundColor: "#e0f7fa",
+                cursor: "pointer",
+              }}
+              onClick={saveVersion}
+            >
+              💾 Save Version
+            </button>
           </ToolbarGroup>
         </Toolbar>
 
@@ -249,10 +249,10 @@ export function SimpleEditor() {
         <div
           style={{
             position: "fixed",
-            top: 100,
+            top: 0,
             right: 0,
-            width: 200,
-            height: "calc(100% - 120px)",
+            width: "20dvw",
+            height: "100dvh",
             padding: "10px",
             backgroundColor: "#f9f9f9",
             borderLeft: "1px solid #ddd",
@@ -261,13 +261,19 @@ export function SimpleEditor() {
           }}
         >
           <h4>Versions</h4>
-         
+
 
           <ul style={{ listStyle: "none", padding: 0, marginTop: 10 }}>
             {versions.map((v, i) => (
-              <li key={i} style={{ marginBottom: 5 }}>
+              <li
+                key={i}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-around",
+                }}
+              >
                 <span>{`Version ${i + 1}`}</span>
-                <div style={{ marginTop: 2 }}>
+                <div style={{ display: "flex" }}>
                   <button
                     style={{
                       display: "block",
@@ -309,7 +315,8 @@ export function SimpleEditor() {
             </div>
           )} */}
         </div>
-      )}
-    </div>
+      )
+      }
+    </div >
   )
 }
