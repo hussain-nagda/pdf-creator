@@ -2,20 +2,18 @@
 
 body {
   --tt-toolbar-height: 44px;
-  --tt-theme-text: var(--tt-gray-light-900);
-
-  .dark & {
-    --tt-theme-text: var(--tt-gray-dark-900);
-  }
+  --tt-theme-text: #202124;
 }
 
 body {
   font-family: "Inter", sans-serif;
-  color: var(--tt-theme-text);
+  color: #202124;
   font-optical-sizing: auto;
   font-weight: 400;
   font-style: normal;
   padding: 0;
+  margin: 0;
+  background-color: #f9fbfd !important;
   overscroll-behavior-y: none;
 }
 
@@ -29,7 +27,7 @@ body,
 #root,
 #app {
   height: 100%;
-  background-color: var(--tt-bg-color);
+  background-color: #f9fbfd !important;
 }
 
 ::-webkit-scrollbar {
@@ -55,24 +53,85 @@ body,
 }
 
 .simple-editor-wrapper {
-  // min-width: 100vw;
-  // min-height: 100vh;
+  min-height: 100vh;
   overflow: auto;
+  background-color: #f9fbfd !important;
+  padding-top: 0;
 }
 
 .simple-editor-content {
-  max-width: 648px;
+  max-width: none;
   width: 100%;
-  margin: 0 auto;
-  height: 100%;
+  margin: 1rem auto;
+  background-color: #f9fbfd !important;
+  border-radius: 0;
+  min-height: calc(100vh - 160px);
   display: flex;
   flex-direction: column;
   flex: 1;
+  padding: 2rem 0;
 }
 
 .simple-editor-content .tiptap.ProseMirror.simple-editor {
   flex: 1;
-  padding: 3rem 3rem 30vh;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #202124 !important;
+  background-color: transparent !important;
+  border: none;
+  outline: none;
+  min-height: calc(100vh - 250px);
+  
+  /* Create page-like structure */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+}
+
+/* A4 Page styling */
+.a4-page {
+  width: 210mm;  /* A4 width */
+  min-height: 297mm; /* A4 height */
+  max-width: 816px; /* Fallback for small screens */
+  background: white;
+  box-shadow: 
+    0 0 0 1px rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.1),
+    0 8px 16px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+  padding: 2.54cm; /* 1 inch margins like standard documents */
+  position: relative;
+  
+  /* Ensure editor content flows properly */
+  .tiptap.ProseMirror {
+    min-height: 200mm; /* Give enough space for content */
+    outline: none;
+    border: none;
+  }
+  
+  /* Print styles */
+  @media print {
+    box-shadow: none;
+    margin: 0;
+    page-break-after: always;
+  }
+}
+
+.a4-page:last-child {
+  margin-bottom: 0;
+}
+
+/* Page number indicator */
+.a4-page::before {
+  content: "Page " attr(data-page-number);
+  position: absolute;
+  top: 1cm;
+  right: 2.54cm;
+  font-size: 10px;
+  color: #9aa0a6;
+  pointer-events: none;
 }
 
 /* Table border styling with customizable stroke color */
@@ -108,8 +167,202 @@ body,
   cursor: pointer;
 }
 
-@media screen and (max-width: 480px) {
-  .simple-editor-content .tiptap.ProseMirror.simple-editor {
-    padding: 1rem 1.5rem 30vh;
+/* Force light theme overrides */
+* {
+  color-scheme: light !important;
+}
+
+.dark {
+  display: none !important;
+}
+
+html.dark,
+body.dark,
+#root.dark,
+#app.dark {
+  background-color: #f9fbfd !important;
+}
+
+.dark * {
+  background-color: inherit !important;
+  color: #202124 !important;
+}
+
+/* Ensure all text elements are properly styled */
+.tiptap.ProseMirror * {
+  color: #202124 !important;
+}
+
+.tiptap.ProseMirror h1,
+.tiptap.ProseMirror h2,
+.tiptap.ProseMirror h3,
+.tiptap.ProseMirror h4,
+.tiptap.ProseMirror h5,
+.tiptap.ProseMirror h6 {
+  color: #202124 !important;
+  font-weight: 600;
+}
+
+.tiptap.ProseMirror p {
+  color: #202124 !important;
+  margin: 0.5rem 0;
+}
+
+/* Page break styling */
+.page-break {
+  page-break-before: always;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 2rem 0;
+  border: none;
+  position: relative;
+}
+
+.page-break::before {
+  content: "Page Break";
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  padding: 0 0.5rem;
+  font-size: 10px;
+  color: #5f6368;
+}
+
+/* Page break section styling */
+.page-break-section {
+  page-break-before: always;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem 0;
+  border-top: 2px solid #e0e0e0;
+  position: relative;
+  
+  span {
+    background: white;
+    padding: 0 1rem;
+    color: #5f6368;
+    font-size: 12px;
+    position: absolute;
+    top: -8px;
   }
+}
+
+/* Continuous page styling */
+.simple-editor-content .tiptap.ProseMirror.simple-editor {
+  /* Add page-like sections */
+  [data-page-break] + * {
+    margin-top: 2rem;
+    padding-top: 1rem;
+  }
+}
+
+@media screen and (max-width: 1024px) {
+  .simple-editor-wrapper {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  
+  .simple-editor-content {
+    max-width: 100%;
+    margin: 0 0.5rem;
+    box-shadow: none;
+    border: 1px solid #e8eaed;
+    background-color: white !important;
+  }
+  
+  .simple-editor-content .tiptap.ProseMirror.simple-editor {
+    padding: 1rem;
+    min-height: calc(100vh - 150px);
+    color: #202124 !important;
+    background-color: white !important;
+  }
+
+  /* Hide sidebars on mobile */
+  .pages-sidebar,
+  .versions-sidebar {
+    display: none !important;
+  }
+  
+  /* Mobile A4 pages */
+  .a4-page {
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 0 1rem 0 !important;
+    padding: 1rem !important;
+  }
+}
+
+/* Sidebar A4 page preview styling */
+.sidebar-page-preview {
+  width: 100%;
+  height: 120px; /* Fixed smaller height */
+  max-width: 85px; /* Smaller max width */
+  aspect-ratio: 210/297; /* A4 aspect ratio */
+  background: white;
+  border: 1px solid #e8eaed;
+  border-radius: 2px;
+  padding: 2px; /* Reduced padding */
+  font-size: 4px; /* Smaller font size */
+  line-height: 1.0;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 
+    0 1px 3px rgba(60, 64, 67, 0.1),
+    0 0 0 0.5px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  margin: 0 auto; /* Center the preview */
+}
+
+.sidebar-page-preview:hover {
+  box-shadow: 
+    0 2px 6px rgba(60, 64, 67, 0.15),
+    0 0 0 1px rgba(26, 115, 232, 0.3);
+  transform: translateY(-1px);
+}
+
+.sidebar-page-preview.active {
+  border: 2px solid #1a73e8;
+  box-shadow: 
+    0 2px 6px rgba(26, 115, 232, 0.2),
+    0 0 0 1px #1a73e8;
+}
+
+/* A4 page content preview */
+.sidebar-page-content {
+  width: 100%;
+  height: 100%;
+  background: white;
+  font-size: 3px; /* Even smaller font */
+  line-height: 0.9;
+  color: #666;
+  overflow: hidden;
+  position: relative;
+  padding: 1px; /* Minimal padding */
+}
+
+/* Simulate page margins */
+.sidebar-page-content::before {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  right: 3px;
+  bottom: 3px;
+  border: 0.5px solid #f0f0f0;
+  pointer-events: none;
+}
+
+/* Page number indicator in preview */
+.sidebar-page-number {
+  position: absolute;
+  top: 1px;
+  right: 2px;
+  font-size: 3px;
+  color: #9aa0a6;
+  font-weight: 500;
 }
