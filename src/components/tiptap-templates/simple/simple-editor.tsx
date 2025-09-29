@@ -74,6 +74,7 @@ export function SimpleEditor() {
   const [mobileView, setMobileView] = React.useState<"main" | "highlighter" | "link">("main")
   const toolbarRef = React.useRef<HTMLDivElement>(null)
   const contentRef = React.useRef<HTMLDivElement>(null)
+  const [versions, setVersions] = React.useState<string[]>([])
 
   const [versions, setVersions] = React.useState<string[]>([])
   const [pages, setPages] = React.useState<Array<{id: string, title: string}>>([
@@ -163,6 +164,7 @@ export function SimpleEditor() {
         horizontalRule: false,
         link: { openOnClick: false, enableClickSelection: true },
       }),
+     
       TableWithBorder.configure({ resizable: true }),
       TableRow,
       TableCell,
