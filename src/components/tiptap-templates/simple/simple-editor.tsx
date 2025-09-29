@@ -76,7 +76,6 @@ export function SimpleEditor() {
   const contentRef = React.useRef<HTMLDivElement>(null)
   const [versions, setVersions] = React.useState<string[]>([])
 
-  const [versions, setVersions] = React.useState<string[]>([])
   const [pages, setPages] = React.useState<Array<{id: string, title: string}>>([
     { id: '1', title: 'Page 1' }
   ])
