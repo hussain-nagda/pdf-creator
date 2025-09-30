@@ -88,6 +88,9 @@ import {
 import { Card, CardBody } from "@/components/tiptap-ui-primitive/card"
 import type { Editor } from "@tiptap/react"
 
+import { PageBreak } from '../../page-break-node'
+
+
 const MainToolbarContent = ({
   onHighlighterClick,
   onLinkClick,
@@ -96,6 +99,7 @@ const MainToolbarContent = ({
   onFontChange,
   isMobile,
   saveVersion,
+  editor,
 }: {
   onHighlighterClick: () => void
   onLinkClick: () => void
@@ -103,6 +107,7 @@ const MainToolbarContent = ({
   onExportWord: () => void
   onFontChange: (family: string) => void
   saveVersion: () => void
+  editor: Editor | null
   isMobile: boolean
 }) => {
   return (
@@ -218,7 +223,19 @@ const MainToolbarContent = ({
         <Button type="button" data-style="ghost" onClick={saveVersion}>
           💾 Save Version
         </Button>
-        
+        <Button
+          type="button"
+          data-style="ghost"
+          onClick={() => {
+            if (editor) {
+              editor.chain().focus().insertPageBreak().run()
+            }
+          }}
+        >
+          Page Break
+        </Button>
+
+
       </ToolbarGroup>
 
       <Spacer />
@@ -292,7 +309,7 @@ export function SimpleEditor() {
     },
   })
 
-  const editor = useEditor({
+  const editor: Editor | null = useEditor({
     immediatelyRender: false,
     shouldRerenderOnTransaction: false,
     editorProps: {
@@ -312,7 +329,7 @@ export function SimpleEditor() {
           enableClickSelection: true,
         },
       }),
-     
+
       TableWithBorder.configure({ resizable: true }),
       TableRow,
       TableCell,
@@ -336,6 +353,7 @@ export function SimpleEditor() {
         upload: handleImageUpload,
         onError: (error) => console.error("Upload failed:", error),
       }),
+      PageBreak,
     ],
     content,
   })
@@ -395,6 +413,7 @@ export function SimpleEditor() {
               }}
               saveVersion={saveVersion} // 🔹 add this line**
               isMobile={isMobile}
+               editor={editor}
             />
           ) : (
             <MobileToolbarContent
